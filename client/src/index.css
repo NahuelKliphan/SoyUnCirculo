@@ -1,0 +1,16 @@
+#display {
+    border: 10px gray solid;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+#player {
+    position: absolute;
+    border-radius: 50%;
+    width: 100px; 
+    height: 100px; 
+    background: #428bca;
+}

@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "nodemon server/src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "NahuelKliphan",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
