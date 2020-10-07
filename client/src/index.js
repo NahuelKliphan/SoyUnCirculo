@@ -32,12 +32,14 @@ function movePlayer(playerData) {
     player.style.left = `${playerData.x}px`;
     player.style.top = `${playerData.y}px`;
 }
+function onPlayerConnected(aNewPlayer){
 
-function onPlayerConnected(listNewPlayers) {
-    console.log(listNewPlayers)
 
+}
+function drawPlayers(listNewPlayers) {
+    
     listNewPlayers.forEach(newPlayer => {
-        playersList.push(newPlayer)
+        
         playerDiv = document.createElement('div');
         playerDiv.setAttribute("id", newPlayer.id);
         playerDiv.classList.add("player")
@@ -74,9 +76,19 @@ socket.on('player-deleted', function (id) {
 socket.on('player-moved', function (playerData) {
     movePlayer(playerData);
 });
-socket.on('on-connect', function (newPlayer) {
-
-    onPlayerConnected(newPlayer)
+socket.on('on-connect', function (newPlayers) {
+    
+    drawPlayers(newPlayers)
+})
+socket.on('new-player-connected', function(aNewPlayer){
+    if (aNewPlayer.id !== playerData.id){
+        listNewPlayers.push(aNewPlayer)
+        playerDiv = document.createElement('div');
+        playerDiv.setAttribute("id", aNewPlayer.id);
+        playerDiv.classList.add("player")
+        display.appendChild(playerDiv)
+        playerData.id = id;
+    }
 })
 socket.on('send-id', function (id) {
     playerDiv = document.createElement('div');

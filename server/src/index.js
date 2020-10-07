@@ -17,11 +17,11 @@ server.listen(8080, function () {
 io.on('connection', function (socket) {
     let newPlayer = { id: socket.id, x: 0, y: 0 }
     players.push(newPlayer)
-   
     io.to(socket.id).emit('send-id', socket.id)
 
     
-    io.emit('on-connect', players.filter( p => p.id != socket.id))
+    io.emit('on-connect', players.filter( p => p.id !== newPlayer.id))
+    io.emit('new-player-connected', newPlayer)
     socket.on('move-player', function (playerData) {
         players.forEach(player => {
             if (player.id === socket.id) {
