@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server/src/index.js"
+    "start": "node server/src/index.js",
+    "dev": "nodemon server/src/index.js"
   },
   "keywords": [],
   "author": "NahuelKliphan",

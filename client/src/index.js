@@ -33,15 +33,22 @@ function movePlayer(playerData) {
     player.style.top = `${playerData.y}px`;
 }
 
-function onPlayerConnected(listNewPlayers) {
-    listNewPlayersFiltered = listNewPlayers.filter( p => p.id !== playerData.id)
-    console.log(listNewPlayersFiltered, playerData)
-    listNewPlayersFiltered.forEach(newPlayer => {
+function recibePlayersList(listNewPlayers) {
+
+    display.innerHTML = "";
+
+    listNewPlayers.forEach(newPlayer => {
         playerDiv = document.createElement('div');
         playerDiv.setAttribute("id", newPlayer.id);
-        playerDiv.classList.add("player")
-        display.appendChild(playerDiv)
+        playerDiv.classList.add("player");
+        display.appendChild(playerDiv);
     });
+
+    playerDiv = document.createElement('div');
+    playerDiv.setAttribute("id", playerData.id);
+    playerDiv.classList.add("player");
+    display.appendChild(playerDiv);
+
 }
 function playerDeleted(id) {
     let element = document.getElementById(id);
@@ -51,19 +58,15 @@ game.onkeypress = function (e) {
 
     if (e.key == 'a') {
         playerData.x = playerData.x - 10;
-        //player.style.left = `${playerPosition.x}px`;
     }
     if (e.key == 's') {
         playerData.y = playerData.y + 10;
-        //player.style.top = `${playerPosition.y}px`;
     }
     if (e.key == 'd') {
         playerData.x = playerData.x + 10;
-        //player.style.left = `${playerPosition.x}px`;
     }
     if (e.key == 'w') {
         playerData.y = playerData.y - 10;
-        //player.style.top = `${playerPosition.y}px`;
     }
     socket.emit('move-player', playerData);
 };
@@ -73,18 +76,27 @@ socket.on('player-deleted', function (id) {
 socket.on('player-moved', function (playerData) {
     movePlayer(playerData);
 });
-socket.on('on-connect', function (newPlayers) {
-    
-    onPlayerConnected(newPlayers)
-})
+socket.on('send-players-exist', function (newPlayers) {
+    recibePlayersList(newPlayers);
+});
 
 socket.on('send-id', function (id) {
-    playerDiv = document.createElement('div');
-    playerDiv.setAttribute("id", id);
-    playerDiv.classList.add("player")
-    display.appendChild(playerDiv)
-    playerData.id = id;
+
     console.log(id)
+
+    playerData.id = id;
+
+});
+
+socket.on('new-player', function (newPlayer) {
+
+    if(playerData.id !== newPlayer.id){
+        playersList.push(newPlayer);
+        recibePlayersList(playersList);
+    }
+
+    console.log(playersList)
+
 });
 
 
