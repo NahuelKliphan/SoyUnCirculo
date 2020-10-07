@@ -20,8 +20,7 @@ io.on('connection', function (socket) {
     io.to(socket.id).emit('send-id', socket.id)
 
     
-    io.emit('on-connect', players.filter( p => p.id !== newPlayer.id))
-    io.emit('new-player-connected', newPlayer)
+    io.emit('on-connect', players)
     socket.on('move-player', function (playerData) {
         players.forEach(player => {
             if (player.id === socket.id) {
