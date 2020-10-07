@@ -32,14 +32,11 @@ function movePlayer(playerData) {
     player.style.left = `${playerData.x}px`;
     player.style.top = `${playerData.y}px`;
 }
-function onPlayerConnected(aNewPlayer){
 
-
-}
-function drawPlayers(listNewPlayers) {
-    
-    listNewPlayers.forEach(newPlayer => {
-        
+function onPlayerConnected(listNewPlayers) {
+    listNewPlayersFiltered = listNewPlayers.filter( p => p.id !== playerData.id)
+    console.log(listNewPlayersFiltered, playerData)
+    listNewPlayersFiltered.forEach(newPlayer => {
         playerDiv = document.createElement('div');
         playerDiv.setAttribute("id", newPlayer.id);
         playerDiv.classList.add("player")
@@ -78,18 +75,9 @@ socket.on('player-moved', function (playerData) {
 });
 socket.on('on-connect', function (newPlayers) {
     
-    drawPlayers(newPlayers)
+    onPlayerConnected(newPlayers)
 })
-socket.on('new-player-connected', function(aNewPlayer){
-    if (aNewPlayer.id !== playerData.id){
-        listNewPlayers.push(aNewPlayer)
-        playerDiv = document.createElement('div');
-        playerDiv.setAttribute("id", aNewPlayer.id);
-        playerDiv.classList.add("player")
-        display.appendChild(playerDiv)
-        playerData.id = id;
-    }
-})
+
 socket.on('send-id', function (id) {
     playerDiv = document.createElement('div');
     playerDiv.setAttribute("id", id);
