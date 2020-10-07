@@ -1,18 +1,18 @@
 var socket = io.connect('http://localhost:8080', { 'forceNew': true });
 
 var display = document.getElementById("display");
-var player = document.getElementById("player");
 
 var windowHeight = window.innerHeight - 20;
 var windowWidth = window.innerWidth - 20;
 
-var playerPosition = {
-    x: windowWidth / 2,
-    y: windowHeight / 2
+var playerData = {
+    id: "",
+    x: 0,
+    y: 0
 };
+let playersList = [
 
-player.style.left = `${playerPosition.x}px`;
-player.style.top = `${playerPosition.y}px`;
+]
 
 window.onresize = changeSize;
 window.onload = changeSize;
@@ -26,34 +26,65 @@ function changeSize() {
     display.style.width = `${windowWidth}px`;
 }
 
-function movePlayer(playerPosition){
-    player.style.left = `${playerPosition.x}px`;
-    player.style.top = `${playerPosition.y}px`;
+function movePlayer(playerData) {
+
+    let player = document.getElementById(playerData.id);
+    player.style.left = `${playerData.x}px`;
+    player.style.top = `${playerData.y}px`;
 }
 
+function onPlayerConnected(listNewPlayers) {
+    console.log(listNewPlayers)
+
+    listNewPlayers.forEach(newPlayer => {
+        playersList.push(newPlayer)
+        playerDiv = document.createElement('div');
+        playerDiv.setAttribute("id", newPlayer.id);
+        playerDiv.classList.add("player")
+        display.appendChild(playerDiv)
+    });
+}
+function playerDeleted(id) {
+    let element = document.getElementById(id);
+    element.parentNode.removeChild(element);
+}
 game.onkeypress = function (e) {
 
     if (e.key == 'a') {
-        playerPosition.x = playerPosition.x - 10;
+        playerData.x = playerData.x - 10;
         //player.style.left = `${playerPosition.x}px`;
     }
     if (e.key == 's') {
-        playerPosition.y = playerPosition.y + 10;
+        playerData.y = playerData.y + 10;
         //player.style.top = `${playerPosition.y}px`;
     }
     if (e.key == 'd') {
-        playerPosition.x = playerPosition.x + 10;
+        playerData.x = playerData.x + 10;
         //player.style.left = `${playerPosition.x}px`;
     }
     if (e.key == 'w') {
-        playerPosition.y = playerPosition.y - 10;
+        playerData.y = playerData.y - 10;
         //player.style.top = `${playerPosition.y}px`;
     }
-    socket.emit('move-player', playerPosition);
+    socket.emit('move-player', playerData);
 };
+socket.on('player-deleted', function (id) {
+    playerDeleted(id)
+})
+socket.on('player-moved', function (playerData) {
+    movePlayer(playerData);
+});
+socket.on('on-connect', function (newPlayer) {
 
-socket.on('player-moved', function (playerPosition) {
-    movePlayer(playerPosition);
+    onPlayerConnected(newPlayer)
+})
+socket.on('send-id', function (id) {
+    playerDiv = document.createElement('div');
+    playerDiv.setAttribute("id", id);
+    playerDiv.classList.add("player")
+    display.appendChild(playerDiv)
+    playerData.id = id;
+    console.log(id)
 });
 
 
