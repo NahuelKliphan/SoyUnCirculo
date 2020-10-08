@@ -25,28 +25,6 @@ function changeSize() {
     display.style.width = `${windowWidth}px`;
 }
 
-function movePlayer(playerLocal) {
-
-    let player = document.getElementById(playerLocal.id);
-    player.style.left = `${playerLocal.x}px`;
-    player.style.top = `${playerLocal.y}px`;
-}
-
-function renderPlayers(listNewPlayers) {
-
-    display.innerHTML = "";
-    
-    listNewPlayers.forEach(newPlayer => {
-        renderPlayer(newPlayer);
-    });
-
-    renderPlayer(playerLocal);
-
-}
-function playerDeleted(id) {
-    let element = document.getElementById(id);
-    element.parentNode.removeChild(element);
-}
 game.onkeypress = function (e) {
 
     if (e.key == 'a') {
@@ -64,8 +42,48 @@ game.onkeypress = function (e) {
     socket.emit('move-player', playerLocal);
 };
 
+function movePlayer(playerLocal) {
+
+    let player = document.getElementById(playerLocal.id);
+    player.style.left = `${playerLocal.x}px`;
+    player.style.top = `${playerLocal.y}px`;
+}
+
+function renderPlayers(listNewPlayers) {
+
+    listNewPlayers.forEach(newPlayer => {
+        renderPlayer(newPlayer);
+    });
+
+    renderPlayer(playerLocal);
+
+}
+
+function renderPlayer(player) {
+
+    let playerDiv = document.getElementById(player.id);
+
+    if (!playerDiv) {
+
+        playerDiv = document.createElement('div');
+        playerDiv.setAttribute("id", player.id);
+        playerDiv.classList.add("player");
+        playerDiv.style.background = playerLocal.id == player.id ? "red" : "blue";
+        display.appendChild(playerDiv);
+    }
+
+    playerDiv.style.left = `${player.x}px`;
+    playerDiv.style.top = `${player.y}px`;
+
+}
+
+function playerDeleted(id) {
+    let element = document.getElementById(id);
+    element.parentNode.removeChild(element);
+}
+
 socket.on('player-deleted', function (id) {
-    playerDeleted(id)
+    playerDeleted(id);
 });
 
 socket.on('player-moved', function (playerLocal) {
@@ -87,16 +105,3 @@ socket.on('new-player', function (newPlayer) {
         renderPlayer(newPlayer);
     }
 });
-
-function renderPlayer(player) {
-
-    let playerDiv = document.createElement('div');
-    playerDiv.setAttribute("id", player.id);
-    playerDiv.classList.add("player");
-    playerDiv.style.left = `${player.x}px`;
-    playerDiv.style.top = `${player.y}px`;
-    playerDiv.innerHTML = player.id;
-    playerDiv.style.background = playerLocal.id == player.id ? "red" : "blue";
-    display.appendChild(playerDiv);
-
-}
