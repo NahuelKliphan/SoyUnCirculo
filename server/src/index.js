@@ -8,11 +8,13 @@ app.use(express.static('public'));
 let players = [];
 
 server.listen(8080, function () {
-    console.log('salio esa pa');
+    console.log('Corriendo!');
 });
+
 io.on('connection', function (socket) {
 
     io.to(socket.id).emit('send-id', socket.id);
+
     io.to(socket.id).emit('send-players-exist', players);
 
     let newPlayer = { id: socket.id, x: 0, y: 0 };
@@ -26,7 +28,6 @@ io.on('connection', function (socket) {
                 player.x = playerData.x;
                 player.y = playerData.y
             }
-
         });
         io.emit('player-moved', playerData);
     });
@@ -37,6 +38,8 @@ io.on('connection', function (socket) {
         let i = players.indexOf(jugador.id);
         players.splice(i, 1);
         io.emit('player-deleted', socket.id);
+
     });
+
 });
 

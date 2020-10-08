@@ -5,14 +5,13 @@ var display = document.getElementById("display");
 var windowHeight = window.innerHeight - 20;
 var windowWidth = window.innerWidth - 20;
 
-var playerData = {
+var playerLocal = {
     id: "",
     x: 0,
     y: 0
 };
-let playersList = [
 
-]
+let playersList = [];
 
 window.onresize = changeSize;
 window.onload = changeSize;
@@ -26,28 +25,22 @@ function changeSize() {
     display.style.width = `${windowWidth}px`;
 }
 
-function movePlayer(playerData) {
+function movePlayer(playerLocal) {
 
-    let player = document.getElementById(playerData.id);
-    player.style.left = `${playerData.x}px`;
-    player.style.top = `${playerData.y}px`;
+    let player = document.getElementById(playerLocal.id);
+    player.style.left = `${playerLocal.x}px`;
+    player.style.top = `${playerLocal.y}px`;
 }
 
-function recibePlayersList(listNewPlayers) {
+function renderPlayers(listNewPlayers) {
 
     display.innerHTML = "";
-
+    
     listNewPlayers.forEach(newPlayer => {
-        playerDiv = document.createElement('div');
-        playerDiv.setAttribute("id", newPlayer.id);
-        playerDiv.classList.add("player");
-        display.appendChild(playerDiv);
+        renderPlayer(newPlayer);
     });
 
-    playerDiv = document.createElement('div');
-    playerDiv.setAttribute("id", playerData.id);
-    playerDiv.classList.add("player");
-    display.appendChild(playerDiv);
+    renderPlayer(playerLocal);
 
 }
 function playerDeleted(id) {
@@ -57,46 +50,53 @@ function playerDeleted(id) {
 game.onkeypress = function (e) {
 
     if (e.key == 'a') {
-        playerData.x = playerData.x - 10;
+        playerLocal.x = playerLocal.x - 10;
     }
     if (e.key == 's') {
-        playerData.y = playerData.y + 10;
+        playerLocal.y = playerLocal.y + 10;
     }
     if (e.key == 'd') {
-        playerData.x = playerData.x + 10;
+        playerLocal.x = playerLocal.x + 10;
     }
     if (e.key == 'w') {
-        playerData.y = playerData.y - 10;
+        playerLocal.y = playerLocal.y - 10;
     }
-    socket.emit('move-player', playerData);
+    socket.emit('move-player', playerLocal);
 };
+
 socket.on('player-deleted', function (id) {
     playerDeleted(id)
-})
-socket.on('player-moved', function (playerData) {
-    movePlayer(playerData);
 });
+
+socket.on('player-moved', function (playerLocal) {
+    movePlayer(playerLocal);
+});
+
 socket.on('send-players-exist', function (newPlayers) {
-    recibePlayersList(newPlayers);
+    renderPlayers(newPlayers);
 });
 
 socket.on('send-id', function (id) {
-
-    console.log(id)
-
-    playerData.id = id;
-
+    playerLocal.id = id;
 });
 
 socket.on('new-player', function (newPlayer) {
 
-    if(playerData.id !== newPlayer.id){
+    if (playerLocal.id !== newPlayer.id) {
         playersList.push(newPlayer);
-        recibePlayersList(playersList);
+        renderPlayer(newPlayer);
     }
-
-    console.log(playersList)
-
 });
 
+function renderPlayer(player) {
 
+    let playerDiv = document.createElement('div');
+    playerDiv.setAttribute("id", player.id);
+    playerDiv.classList.add("player");
+    playerDiv.style.left = `${player.x}px`;
+    playerDiv.style.top = `${player.y}px`;
+    playerDiv.innerHTML = player.id;
+    playerDiv.style.background = playerLocal.id == player.id ? "red" : "blue";
+    display.appendChild(playerDiv);
+
+}
